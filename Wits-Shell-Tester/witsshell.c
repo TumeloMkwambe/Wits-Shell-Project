@@ -14,30 +14,13 @@ void error(){
     write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
-void built_in_commands(char *args[], int n){
-    int i = 0;
-
-    if(strcmp(args[0], "cd") == 0){
-        for(int j = 1; j < n; j++){
-            if(args[j] != NULL){
-                i++;
-            }
-        }
-        if(i != 1){
-            error();
-        }
-        chdir(args[1]);
-    }
-    else if(strcmp(args[0], "exit") == 0){
-        error();
-    }
+void built_in_command(char *args[], int n){
+    printf("Built-in command!\n");
 }
 
 void parse_command(char *line){
-    
     char *args[INPUT_MAX] = {NULL};
-    int n = sizeof(args) / sizeof(args[0]);
-
+    
     int i = 0;
     // Separate command arguments and adds them to args array!
     while((args[i] = strsep(&line, " ")) != NULL){
@@ -45,6 +28,12 @@ void parse_command(char *line){
             printf("args[%d] = %s\n", i, args[i]);
             i++;
         }
+    }
+
+    // Handle built-in commands
+    if(strcmp(args[0], "exit") == 0 || strcmp(args[0], "cd") == 0 || strcmp(args[0], "path") == 0){
+        int n = sizeof(args) / sizeof(args[0]);
+        built_in_command(args, n);
     }
 }
 
@@ -58,7 +47,7 @@ void execute(char *command, char *args[]){
     }
 }
 
-int main(int MainArgc, char *MainArgv[]){
+int main(int MainArgc, char *MainArgv[]){ 
     FILE *file;
     char *line = NULL;
     size_t len = 0;
