@@ -33,27 +33,18 @@ void built_in_commands(char *args[], int n){
     }
 }
 
-void parse(char *line){
-    char path[INPUT_MAX] = "/bin/";
+void parse_command(char *line){
+    
     char *args[INPUT_MAX] = {NULL};
     int n = sizeof(args) / sizeof(args[0]);
-    
+
     int i = 0;
     // Separate command arguments and adds them to args array!
     while((args[i] = strsep(&line, " ")) != NULL){
         if(strlen(args[i]) > 0){
+            printf("args[%d] = %s\n", i, args[i]);
             i++;
         }
-    }
-    
-    // If command is built-in command then execute handler!
-    if(strcmp(args[0], "exit") == 0 || strcmp(args[0], "cd") == 0 || strcmp(args[0], "path") == 0){
-        built_in_commands(args, n);
-    }
-    
-    // If command is not built-in command then execute handler!
-    else{
-        printf("Not built-in command!");
     }
 }
 
@@ -83,7 +74,7 @@ int main(int MainArgc, char *MainArgv[]){
             if (line[nread - 1] == '\n') {
                 line[nread - 1] = '\0';
             }
-            printf("COMMAND: %s\n", line);
+            parse_command(line);
         }
         //return(0);
     }
@@ -96,7 +87,7 @@ int main(int MainArgc, char *MainArgv[]){
             if (line[nread - 1] == '\n') {
                 line[nread - 1] = '\0';
             }
-            printf("COMMAND: %s\n", line);
+            parse_command(line);
         }
     }
 
