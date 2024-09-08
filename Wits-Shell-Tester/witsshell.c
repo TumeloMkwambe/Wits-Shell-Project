@@ -14,26 +14,16 @@ void error(){
     write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
-void execute(char *line){
-    char path[INPUT_MAX] = "/bin/";
-    char *args[INPUT_MAX] = {NULL};
+void built_in_commands(char *args[], int n){
     int i = 0;
 
-    while((args[i] = strsep(&line, " ")) != NULL){
-        if(strlen(args[i]) > 0){
-            i++;
-        }
-    }
-
-    int k = 0;
-    int n = sizeof(args) / sizeof(args[0]);
     if(strcmp(args[0], "cd") == 0){
         for(int j = 1; j < n; j++){
             if(args[j] != NULL){
-                k++;
+                i++;
             }
         }
-        if(k != 1){
+        if(i != 1){
             error();
         }
         chdir(args[1]);
@@ -41,18 +31,39 @@ void execute(char *line){
     else if(strcmp(args[0], "exit") == 0){
         error();
     }
+}
+
+void parse(char *line){
+    char path[INPUT_MAX] = "/bin/";
+    char *args[INPUT_MAX] = {NULL};
+    int n = sizeof(args) / sizeof(args[0]);
+    
+    int i = 0;
+    // Separate command arguments and adds them to args array!
+    while((args[i] = strsep(&line, " ")) != NULL){
+        if(strlen(args[i]) > 0){
+            i++;
+        }
+    }
+    
+    // If command is built-in command then execute handler!
+    if(strcmp(args[0], "exit") == 0 || strcmp(args[0], "cd") == 0 || strcmp(args[0], "path") == 0){
+        built_in_commands(args, n);
+    }
+    
+    // If command is not built-in command then execute handler!
     else{
-        strcat(path, args[0]);
-        int pid = fork();
-        if(pid == 0){
-            int status = execv(path, args);
-            if(status == -1){
-                error();
-            }
-        }
-        else{
-            wait(NULL);
-        }
+        printf("Not built-in command!");
+    }
+}
+
+void execute(char *command, char *args[]){
+    int pid = fork();
+    if(pid == 0){
+        execv(command, args);
+    }
+    else{
+        wait(NULL);
     }
 }
 
@@ -72,32 +83,20 @@ int main(int MainArgc, char *MainArgv[]){
             if (line[nread - 1] == '\n') {
                 line[nread - 1] = '\0';
             }
-            if(strcmp(line, "exit") == 0){
-                exit(0);
-            }
-            execute(line);
+            printf("COMMAND: %s\n", line);
         }
-
-        return(0);
+        //return(0);
     }
 
-    while (1) // Interactive case
-    {
-        printf("witsshell> ");
-        nread = getline(&line, &len, stdin);
-        if (line[nread - 1] == '\n') {
-            line[nread - 1] = '\0';
-        }
-        if(strcmp(line, "exit") == 0){
-            exit(0);
-        }
-
-        int pid = fork();
-        if(pid == 0){
-            execute(line);
-        }
-        else{
-            wait(NULL);
+    else{
+        while (1) // Interactive case
+        {
+            printf("witsshell> ");
+            nread = getline(&line, &len, stdin);
+            if (line[nread - 1] == '\n') {
+                line[nread - 1] = '\0';
+            }
+            printf("COMMAND: %s\n", line);
         }
     }
 
