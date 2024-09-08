@@ -1,0 +1,2 @@
+*** stack smashing detected ***: terminated
+tester/run-tests.sh: line 29: 31245 Aborted                 (core dumped) ./witsshell tests/20.in
