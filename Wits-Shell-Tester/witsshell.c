@@ -44,16 +44,23 @@ void cd_handler(char *args[], int n){
 
 void path_handler(char *args[], int n){
     int i = 0;
+    
     for(int j = 1; j < n; j++){ // count arguments of path command
         if(args[j] != NULL){
             i++;
         }
     }
-    if(i == 0){ // if the path is empty
+    if(i == 0){ // if path has no arguments then reset path
         path[0] = NULL;
         path[1] = NULL;
     }
-
+    else{
+        for(int j = 0; j < i; j++){
+            char new_arg[1024];
+            strcpy(new_arg, args[j+1]); // copy don't assign; strings are pointers remember!
+            path[j] = new_arg;
+        }
+    }
 }
 
 void built_in_command(char *args[], int n){
@@ -134,12 +141,14 @@ void parse_command(char *line){
     }
 
     // Check shell command
-    if(check_shell_script(args[0]) == 0){
+    else if(check_shell_script(args[0]) == 0 && (path[0] == NULL || strcmp(path[0], "/bin/") == 0)){
         error();
     }
 
     // execute command
-    execute_command(args);
+    else{
+        execute_command(args);
+    }
 }
 
 int main(int MainArgc, char *MainArgv[]){ 

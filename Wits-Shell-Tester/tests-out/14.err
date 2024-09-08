@@ -1,1 +1,1 @@
-tester/run-tests.sh: line 29: 20572 Segmentation fault      (core dumped) ./witsshell tests/p2a-tests/bad
+tester/run-tests.sh: line 29: 31185 Segmentation fault      (core dumped) ./witsshell tests/p2a-tests/bad
