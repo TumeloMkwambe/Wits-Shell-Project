@@ -1,1 +1,1 @@
-tester/run-tests.sh: line 29: 31195 Segmentation fault      (core dumped) ./witsshell tests/15.in
+tester/run-tests.sh: line 29: 129853 Segmentation fault      (core dumped) ./witsshell tests/15.in
