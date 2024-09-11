@@ -95,12 +95,16 @@ int redirectionParser(char *args[], int argc){
                 }
                 token = strtok(NULL, ">");
             }
+            break;
         }
         else if(strstr(args[i], ">") != NULL){
-            if(args[i+1] == NULL || args[i+2]){ // if there is not output file or more than 1 output file
+            if(args[i+1] == NULL || args[i+2] != NULL){ // if there is not output file or more than 1 output file
                 error();
                 return -1;
             }
+            strcpy(args[i], args[i+1]);
+            args[i+1] = NULL;
+            break;
         }
     }
 
@@ -151,17 +155,18 @@ void redirectionHandler(char *args[]){
     //char *updated_args[INPUT_MAX] = {NULL};
     int i = 0;
     while(args[i] != NULL){
+        //printf("args[%d] = %s\n", i, args[i]);
         i++;
     }
+
     strcpy(filename, args[i-1]);
     args[i-1] = NULL;
-    FILE *file = freopen(args[i+1], "w", stdout); // reroutes stdout for main process
+    FILE *file = freopen(filename, "w", stdout); // reroutes stdout for main process
     dup2(fileno(stdout), fileno(stderr));
     executeCommand(args);
     fclose(file);
     freopen("/dev/tty", "w", stdout); // reroutes standard output to terminal
     freopen("/dev/tty", "w", stderr); // reroutes standard error to terminal
-    
 }
 
 int checkShellScript(char *command){
