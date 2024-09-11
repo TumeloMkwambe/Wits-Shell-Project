@@ -58,6 +58,9 @@ void pathHandler(char *args[], int n){
         for(int j = 0; j < i; j++){
             char new_arg[1024];
             strcpy(new_arg, args[j+1]); // copy don't assign; strings are pointers remember!
+            if(new_arg[strlen(new_arg) - 1] != '/'){
+                strcat(new_arg, "/");
+            }
             path[j] = new_arg;
         }
     }
@@ -179,9 +182,26 @@ int checkShellScript(char *command){
 
 void parseCommand(char line[]){
     char *args[INPUT_MAX] = {NULL};
+    char *parallel_commands[INPUT_MAX] = {NULL};
     int i = 0;
 
-    if(strstr(line, ">") != NULL){ // if > is present in input
+    if(strstr(line, "&") != NULL){
+        char* token = strtok(line, "&");
+        while(token != NULL){
+            parallel_commands[i] = token;
+            //printf("parallel_command[%d] = %s\n", i, parallel_commands[i]);
+            if(strlen(parallel_commands[i]) > 0){
+                i++;
+            }
+            token = strtok(NULL, "&");
+        }
+        int j = 0;
+        while(parallel_commands[j] != NULL){
+            parseCommand(parallel_commands[j]);
+            j++;
+        }
+    }
+    else if(strstr(line, ">") != NULL){ // if > is present in input
         while((args[i] = strsep(&line, " ")) != NULL){
             if(strlen(args[i]) > 0){
                 i++;
