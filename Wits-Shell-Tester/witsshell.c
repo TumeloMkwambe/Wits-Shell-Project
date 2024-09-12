@@ -61,7 +61,7 @@ void pathHandler(char *args[], int n){
             if(new_arg[strlen(new_arg) - 1] != '/'){
                 strcat(new_arg, "/");
             }
-            path[j] = new_arg;
+            path[j] = strdup(new_arg);
         }
     }
 }
@@ -159,14 +159,15 @@ void redirectionHandler(char *args[]){
         i++;
     }
 
+    int saved_stdout = dup(STDOUT_FILENO);
     strcpy(filename, args[i-1]);
     args[i-1] = NULL;
     FILE *file = freopen(filename, "w", stdout); // reroutes stdout for main process
     dup2(fileno(stdout), fileno(stderr));
     executeCommand(args);
     fclose(file);
-    freopen("/dev/tty", "w", stdout); // reroutes standard output to terminal
-    freopen("/dev/tty", "w", stderr); // reroutes standard error to terminal
+    fflush(stdout);
+    dup2(saved_stdout, STDOUT_FILENO);
 }
 
 int checkShellScript(char *command){
