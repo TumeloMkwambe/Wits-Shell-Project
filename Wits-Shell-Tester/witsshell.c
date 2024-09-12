@@ -202,10 +202,15 @@ void parseCommand(char line[]){
             token = strtok(NULL, "&");
         }
         int j = 0;
-        while(parallel_commands[j] != NULL){
+        while (parallel_commands[j] != NULL) {
+        int pid = fork();
+        if (pid == 0) {
             parseCommand(parallel_commands[j]);
-            j++;
+            exit(0);  // Child process exits after executing the command
         }
+        j++;
+    }
+    while (wait(NULL) > 0);
     }
     else if(strstr(line, ">") != NULL){ // if > is present in input
         while((args[i] = strsep(&line, " ")) != NULL){
